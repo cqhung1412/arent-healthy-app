@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 
-import Photo from './photo';
+import DiaryList from './diary-list';
 
-describe('Photo', () => {
+describe('DiaryList', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<Photo imageName="logo" imageSpec="test" />);
+    const { baseElement } = render(<DiaryList />);
     expect(baseElement).toBeTruthy();
   });
 });

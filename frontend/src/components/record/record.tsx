@@ -1,18 +1,20 @@
 import styles from './record.module.css';
-import ImagePlaceholder from 'src/assets/images/m01.png';
-
+import ImagePlaceholder from '../../assets/images/MyRecommend-1.png';
 /* eslint-disable-next-line */
-export interface RecordProps {
-  imageName?: string;
-  imageSpec?: string;
-}
+export interface RecordProps {}
 
 export function Record(props: RecordProps) {
-  console.log(ImagePlaceholder)
   return (
     <div className={styles['container']}>
-      <img className={styles['image']} src={props.imageName} alt={`record-${props.imageName}`}/>
-      <div className={styles['bottonLeft']}>{props.imageSpec}</div>
+      <div className={styles['outer-line']}>
+        <img
+          className={styles['image']}
+          src={ImagePlaceholder}
+          alt="placeholder"
+        />
+        <div className={styles['main-text']}>BODY RECORD</div>
+        <button className={styles['button']}>自分のカラダの記録</button>
+      </div>
     </div>
   );
 }
