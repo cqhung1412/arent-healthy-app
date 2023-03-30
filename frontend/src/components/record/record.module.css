@@ -1,0 +1,26 @@
+/*
+ * Replace this with your own classes
+ *
+ * e.g.
+ * .container {
+ * }
+*/
+
+.container {
+  position: relative;
+}
+
+.image {
+  height: 100%;
+  width: 100%;
+}
+
+.bottom-left {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: black;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+}
