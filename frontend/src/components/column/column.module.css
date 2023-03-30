@@ -1,7 +1,96 @@
-/*
- * Replace this with your own classes
- *
- * e.g.
- * .container {
- * }
-*/
+/* component_column */
+
+.container {
+  position: relative;
+  width: 234px;
+  height: 224px;
+}
+
+.image {
+  position: absolute;
+  height: 144px;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+
+  background: #000000;
+}
+
+.image-text-box {
+  position: absolute;
+  width: 144px;
+  height: 24px;
+  left: 0px;
+  top: calc(50% - 24px/2 + 20px);
+
+  background: #FFCC21;
+}
+
+.image-text {
+  position: absolute;
+  left: 8px;
+
+  padding: 0 5px;
+  padding-top: 2px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  /* line-height: 30px; */
+  /* identical to box height, or 200% */
+
+  color: #FFFFFF;
+}
+
+.main-text-box {
+  position: absolute;
+  left: 0%;
+  right: 0.85%;
+  top: 67.86%;
+  bottom: 10.71%;
+}
+
+.main-text {
+  position: absolute;
+  height: 48px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 22px;
+  /* or 147% */
+  letter-spacing: 0.075px;
+
+  color: #414141;
+}
+
+.hashtag-box {
+  position: absolute;
+  left: 0%;
+  right: 0.85%;
+  top: 88.39%;
+  bottom: 0.89%;
+}
+
+.hashtag {
+  position: absolute;
+  height: 24px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 22px;
+  /* or 183% */
+  letter-spacing: 0.06px;
+
+  color: #ff963c;
+}
