@@ -9,28 +9,30 @@ import IconMenu from '../../assets/svg/icon_menu.svg';
 export interface HeaderProps {}
 
 export function Header(props: HeaderProps) {
-  return (
-    <div className={styles['container']}>
-      <div className={styles['container-box']}>
-        <img className={styles['logo']} src={Logo} alt="logo" />
-        <div className={styles['navi-1']}>
-          <img src={IconMemo} alt="memo" />
-          自分の記録
-        </div>
-        <div className={styles['navi-2']}>
-          <img src={IconChallenge} alt="challenge" />
-          チャレンジ
-        </div>
-        <div className={styles['navi-3']}>
-          <img src={IconInfo} alt="info" />
-          お知らせ
-        </div>
-        <div className={styles['menu']}>
-          <img src={IconMenu} alt="menu" />
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<div className={styles['header']}>
+			<a className={styles['logo']} href="/">
+				<img src={Logo} alt="logo" />
+			</a>
+			<div className={styles['header-right']}>
+				<a href="#home">
+					<img src={IconMemo} alt="memo" />
+					自分の記録
+				</a>
+				<a href="#home">
+					<img src={IconChallenge} alt="memo" />
+					チャレンジ
+				</a>
+				<a href="#home">
+					<img src={IconInfo} alt="memo" />
+					お知らせ
+				</a>
+				<a href="#">
+					<img src={IconMenu} alt="menu" />
+				</a>
+			</div>
+		</div>
+	);
 }
 
 export default Header;

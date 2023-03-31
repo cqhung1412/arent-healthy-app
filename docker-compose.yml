@@ -25,7 +25,7 @@ services:
     command: ["/app/main"]
   frontend:
     image: qhung1412/arent-frontend
-    build: vite-frontend
+    build: frontend
     # ports:
     #   - "80:80"
     networks:
