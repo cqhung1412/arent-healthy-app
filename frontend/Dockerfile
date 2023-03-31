@@ -1,14 +1,12 @@
-FROM node:18-alpine
-ENV NODE_ENV=production
-
-WORKDIR /usr/src/app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install -g @nrwl/cli
-RUN npm install --production --silent && mv node_modules ../
+FROM node:18-alpine3.17 as build
+WORKDIR /app
+COPY . /app
+RUN npm install
 RUN npm run build
 
-COPY . .
-EXPOSE 4200
-RUN chown -R node /usr/src/app
-USER node
-CMD ["npm", "start"]
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install nginx -y
+COPY --from=build /app/dist /var/www/html/
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]

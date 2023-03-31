@@ -1,14 +1,29 @@
 {
-  "extends": ["plugin:@nrwl/nx/react", "./.eslintrc.base.json"],
-  "ignorePatterns": ["!**/*"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true,
+        "jest/globals": true
     },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
+    "extends": [
+        "prettier",
+        "plugin:jest/recommended"
+        // "eslint:recommended",
+        // "plugin:react/recommended",
+        // "plugin:@typescript-eslint/recommended"
+    ],
+    "overrides": [
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint",
+        "jest"
+    ],
+    "rules": {
     }
-  ]
 }
