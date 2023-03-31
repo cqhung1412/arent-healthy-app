@@ -1,7 +1,90 @@
-/*
- * Replace this with your own classes
- *
- * e.g.
- * .container {
- * }
-*/
+.container {
+  position: absolute;
+  width: 100%;
+  height: 64px;
+  left: 0;
+  top: 0;
+}
+
+.container-box {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+
+  background: #414141;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.160784);
+}
+
+.logo {
+  position: absolute;
+  width: 144px;
+  left: 160px;
+  top: 0px;
+  bottom: 0px;
+
+  mix-blend-mode: normal;
+}
+
+.menu {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  right: 160px;
+  top: calc(50% - 32px/2);
+
+  mix-blend-mode: normal;
+}
+
+.navi-1 {
+  position: absolute;
+  width: 160px;
+  left: calc(50% - 160px/2 + 32px);
+  top: 8px;
+  bottom: 8px;
+
+  mix-blend-mode: normal;
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 23px;
+  /* identical to box height, or 144% */
+
+  color: #FFFFFF;
+}
+
+.navi-2 {
+  position: absolute;
+  width: 160px;
+  left: calc(50% - 160px/2 + 192px);
+  top: 8px;
+  bottom: 8px;
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 23px;
+  /* identical to box height, or 144% */
+
+  color: #FFFFFF;
+}
+
+.navi-3 {
+  position: absolute;
+  width: 160px;
+  left: calc(50% - 160px/2 + 352px);
+  top: 8px;
+  bottom: 8px;
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 23px;
+  /* identical to box height, or 144% */
+
+  color: #FFFFFF;
+}
