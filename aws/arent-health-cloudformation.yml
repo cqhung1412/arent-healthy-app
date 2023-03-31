@@ -1,0 +1,754 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  BackendService:
+    DependsOn:
+    - PostgresService
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: BacknetNetwork
+          Subnets:
+          - subnet-01ece9168c7557fd8
+          - subnet-0e022a90896690696
+          - subnet-043a7434f2460a1bc
+          - subnet-0d327394aa5d7a875
+          - subnet-060a4086e0b0cf587
+          - subnet-0aa1df478a237436a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - BackendServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: backend
+      TaskDefinition:
+        Ref: BackendTaskDefinition
+    Type: AWS::ECS::Service
+  BackendServiceDiscoveryEntry:
+    Properties:
+      Description: '"backend" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: backend
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  BackendTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - arent-healthy-app.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: Backend_ResolvConf_InitContainer
+      - Command:
+        - /app/main
+        DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Backend_ResolvConf_InitContainer
+        EntryPoint:
+        - /app/wait-for.sh
+        - postgres:5432
+        - --
+        - /app/start.sh
+        Environment:
+        - Name: DB_SOURCE
+          Value: postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
+        Essential: true
+        Image: docker.io/qhung1412/arent-backend:latest@sha256:3b67a6cddc604b5d9cafa1c36880968fc2b7f8a81b8c5bbb809439c62caccec4
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: backend
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: BackendTaskExecutionRole
+      Family: arent-healthy-app-backend
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  BackendTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: backend
+    Type: AWS::IAM::Role
+  Backnet80Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: nginx:80/tcp on backnet network
+      FromPort: 80
+      GroupId:
+        Ref: BacknetNetwork
+      IpProtocol: TCP
+      ToPort: 80
+    Type: AWS::EC2::SecurityGroupIngress
+  BacknetNetwork:
+    Properties:
+      GroupDescription: arent-healthy-app Security Group for backnet network
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.network
+        Value: arent-healthy-app_backnet
+      VpcId: vpc-004490b868f955807
+    Type: AWS::EC2::SecurityGroup
+  BacknetNetworkIngress:
+    Properties:
+      Description: Allow communication within network backnet
+      GroupId:
+        Ref: BacknetNetwork
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Ref: BacknetNetwork
+    Type: AWS::EC2::SecurityGroupIngress
+  CloudMap:
+    Properties:
+      Description: Service Map for Docker Compose project arent-healthy-app
+      Name: arent-healthy-app.local
+      Vpc: vpc-004490b868f955807
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+  Cluster:
+    Properties:
+      ClusterName: arent-healthy-app
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+    Type: AWS::ECS::Cluster
+  DbdataAccessPoint:
+    Properties:
+      AccessPointTags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.volume
+        Value: db-data
+      - Key: Name
+        Value: arent-healthy-app_db-data
+      FileSystemId:
+        Ref: DbdataFilesystem
+    Type: AWS::EFS::AccessPoint
+  DbdataFilesystem:
+    DeletionPolicy: Retain
+    Properties:
+      Encrypted: true
+      FileSystemTags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.volume
+        Value: db-data
+      - Key: Name
+        Value: arent-healthy-app_db-data
+    Type: AWS::EFS::FileSystem
+  DbdataNFSMountTargetOnSubnet01ece9168c7557fd8:
+    Properties:
+      FileSystemId:
+        Ref: DbdataFilesystem
+      SecurityGroups:
+      - Ref: BacknetNetwork
+      - Ref: FrontnetNetwork
+      SubnetId: subnet-01ece9168c7557fd8
+    Type: AWS::EFS::MountTarget
+  DbdataNFSMountTargetOnSubnet043a7434f2460a1bc:
+    Properties:
+      FileSystemId:
+        Ref: DbdataFilesystem
+      SecurityGroups:
+      - Ref: BacknetNetwork
+      - Ref: FrontnetNetwork
+      SubnetId: subnet-043a7434f2460a1bc
+    Type: AWS::EFS::MountTarget
+  DbdataNFSMountTargetOnSubnet060a4086e0b0cf587:
+    Properties:
+      FileSystemId:
+        Ref: DbdataFilesystem
+      SecurityGroups:
+      - Ref: BacknetNetwork
+      - Ref: FrontnetNetwork
+      SubnetId: subnet-060a4086e0b0cf587
+    Type: AWS::EFS::MountTarget
+  DbdataNFSMountTargetOnSubnet0aa1df478a237436a:
+    Properties:
+      FileSystemId:
+        Ref: DbdataFilesystem
+      SecurityGroups:
+      - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
+      SubnetId: subnet-0aa1df478a237436a
+    Type: AWS::EFS::MountTarget
+  DbdataNFSMountTargetOnSubnet0d327394aa5d7a875:
+    Properties:
+      FileSystemId:
+        Ref: DbdataFilesystem
+      SecurityGroups:
+      - Ref: BacknetNetwork
+      - Ref: FrontnetNetwork
+      SubnetId: subnet-0d327394aa5d7a875
+    Type: AWS::EFS::MountTarget
+  DbdataNFSMountTargetOnSubnet0e022a90896690696:
+    Properties:
+      FileSystemId:
+        Ref: DbdataFilesystem
+      SecurityGroups:
+      - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
+      SubnetId: subnet-0e022a90896690696
+    Type: AWS::EFS::MountTarget
+  FrontendService:
+    DependsOn:
+    - PostgresService
+    - BackendService
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: FrontnetNetwork
+          Subnets:
+          - subnet-01ece9168c7557fd8
+          - subnet-0e022a90896690696
+          - subnet-043a7434f2460a1bc
+          - subnet-0d327394aa5d7a875
+          - subnet-060a4086e0b0cf587
+          - subnet-0aa1df478a237436a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - FrontendServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: frontend
+      TaskDefinition:
+        Ref: FrontendTaskDefinition
+    Type: AWS::ECS::Service
+  FrontendServiceDiscoveryEntry:
+    Properties:
+      Description: '"frontend" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: frontend
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  FrontendTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - arent-healthy-app.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: Frontend_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Frontend_ResolvConf_InitContainer
+        Essential: true
+        Image: docker.io/qhung1412/arent-frontend:latest@sha256:85b67b5032f59d9eda76f6eb3c7aaed4bf79fa21c02a02638b42474ee11da487
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: frontend
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: FrontendTaskExecutionRole
+      Family: arent-healthy-app-frontend
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  FrontendTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: frontend
+    Type: AWS::IAM::Role
+  Frontnet80Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: nginx:80/tcp on frontnet network
+      FromPort: 80
+      GroupId:
+        Ref: FrontnetNetwork
+      IpProtocol: TCP
+      ToPort: 80
+    Type: AWS::EC2::SecurityGroupIngress
+  FrontnetNetwork:
+    Properties:
+      GroupDescription: arent-healthy-app Security Group for frontnet network
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.network
+        Value: arent-healthy-app_frontnet
+      VpcId: vpc-004490b868f955807
+    Type: AWS::EC2::SecurityGroup
+  FrontnetNetworkIngress:
+    Properties:
+      Description: Allow communication within network frontnet
+      GroupId:
+        Ref: FrontnetNetwork
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Ref: FrontnetNetwork
+    Type: AWS::EC2::SecurityGroupIngress
+  LoadBalancer:
+    Properties:
+      Scheme: internet-facing
+      SecurityGroups:
+      - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
+      Subnets:
+      - subnet-01ece9168c7557fd8
+      - subnet-0e022a90896690696
+      - subnet-043a7434f2460a1bc
+      - subnet-0d327394aa5d7a875
+      - subnet-060a4086e0b0cf587
+      - subnet-0aa1df478a237436a
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      Type: application
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  LogGroup:
+    Properties:
+      LogGroupName: /docker-compose/arent-healthy-app
+    Type: AWS::Logs::LogGroup
+  NginxService:
+    DependsOn:
+    - NginxTCP80Listener
+    - BackendService
+    - FrontendService
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: nginx
+        ContainerPort: 80
+        TargetGroupArn:
+          Ref: NginxTCP80TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: FrontnetNetwork
+          - Ref: BacknetNetwork
+          Subnets:
+          - subnet-01ece9168c7557fd8
+          - subnet-0e022a90896690696
+          - subnet-043a7434f2460a1bc
+          - subnet-0d327394aa5d7a875
+          - subnet-060a4086e0b0cf587
+          - subnet-0aa1df478a237436a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - NginxServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: nginx
+      TaskDefinition:
+        Ref: NginxTaskDefinition
+    Type: AWS::ECS::Service
+  NginxServiceDiscoveryEntry:
+    Properties:
+      Description: '"nginx" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: nginx
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  NginxTCP80Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: NginxTCP80TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: HTTP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  NginxTCP80TargetGroup:
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      TargetType: ip
+      VpcId: vpc-004490b868f955807
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  NginxTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - arent-healthy-app.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: Nginx_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Nginx_ResolvConf_InitContainer
+        Essential: true
+        Image: docker.io/qhung1412/arent-nginx:latest@sha256:e173b2e6b9d667b430bec5cd7535f6e134d583a0d55b0ca491c759566e2f6df2
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: nginx
+        PortMappings:
+        - ContainerPort: 80
+          HostPort: 80
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: NginxTaskExecutionRole
+      Family: arent-healthy-app-nginx
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  NginxTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: nginx
+    Type: AWS::IAM::Role
+  PostgresService:
+    DependsOn:
+    - DbdataNFSMountTargetOnSubnet01ece9168c7557fd8
+    - DbdataNFSMountTargetOnSubnet0e022a90896690696
+    - DbdataNFSMountTargetOnSubnet043a7434f2460a1bc
+    - DbdataNFSMountTargetOnSubnet0d327394aa5d7a875
+    - DbdataNFSMountTargetOnSubnet060a4086e0b0cf587
+    - DbdataNFSMountTargetOnSubnet0aa1df478a237436a
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: BacknetNetwork
+          Subnets:
+          - subnet-01ece9168c7557fd8
+          - subnet-0e022a90896690696
+          - subnet-043a7434f2460a1bc
+          - subnet-0d327394aa5d7a875
+          - subnet-060a4086e0b0cf587
+          - subnet-0aa1df478a237436a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - PostgresServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: postgres
+      TaskDefinition:
+        Ref: PostgresTaskDefinition
+    Type: AWS::ECS::Service
+  PostgresServiceDiscoveryEntry:
+    Properties:
+      Description: '"postgres" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: postgres
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  PostgresTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - arent-healthy-app.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        Name: Postgres_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Postgres_ResolvConf_InitContainer
+        Environment:
+        - Name: POSTGRES_DB
+          Value: simple_health
+        - Name: POSTGRES_PASSWORD
+          Value: secret
+        - Name: POSTGRES_USER
+          Value: root
+        Essential: true
+        Image: docker.io/library/postgres:alpine@sha256:ab88acc4edfbd7c728ad0fa741139b6cc830bd85138a40848672b784aab57306
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: arent-healthy-app
+        MountPoints:
+        - ContainerPath: /var/lib/postgresql
+          SourceVolume: db-data
+        Name: postgres
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: PostgresTaskExecutionRole
+      Family: arent-healthy-app-postgres
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+      TaskRoleArn:
+        Ref: PostgresTaskRole
+      Volumes:
+      - EFSVolumeConfiguration:
+          AuthorizationConfig:
+            AccessPointId:
+              Ref: DbdataAccessPoint
+            IAM: ENABLED
+          FilesystemId:
+            Ref: DbdataFilesystem
+          TransitEncryption: ENABLED
+        Name: db-data
+    Type: AWS::ECS::TaskDefinition
+  PostgresTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: postgres
+    Type: AWS::IAM::Role
+  PostgresTaskRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action:
+            - elasticfilesystem:ClientMount
+            - elasticfilesystem:ClientWrite
+            - elasticfilesystem:ClientRootAccess
+            Condition:
+              StringEquals:
+                elasticfilesystem:AccessPointArn:
+                  Ref: DbdataAccessPoint
+            Effect: Allow
+            Principal: {}
+            Resource:
+            - Fn::GetAtt:
+              - DbdataFilesystem
+              - Arn
+          Version: 2012-10-17
+        PolicyName: PostgresDbdataVolumeMountPolicy
+      Tags:
+      - Key: com.docker.compose.project
+        Value: arent-healthy-app
+      - Key: com.docker.compose.service
+        Value: postgres
+    Type: AWS::IAM::Role

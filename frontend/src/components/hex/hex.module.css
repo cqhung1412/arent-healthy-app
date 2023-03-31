@@ -1,0 +1,41 @@
+.container {
+  position: relative;
+  width: 136px;
+  height: 136px;
+  content: "\2B22";
+
+  background: linear-gradient(155.89deg, #FFCC21 8.26%, #FF963C 91.18%);
+  /* transform: rotate(-90deg); */
+}
+
+/* .container::after {
+  content: "\2B22";
+  font-size: 136px;
+  color: linear-gradient(155.89deg, #FFCC21 8.26%, #FF963C 91.18%);
+} */
+
+.text {
+  position: absolute;
+  width: 78px;
+  height: 24px;
+  left: calc(50% - 78px/2);
+  top: calc(50% - 24px/2 + 28px);
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  /* identical to box height, or 120% */
+  text-align: center;
+
+  color: #FFFFFF;
+}
+
+.icon {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  left: calc(50% - 56px/2);
+  top: calc(50% - 56px/2 - 12px);
+}

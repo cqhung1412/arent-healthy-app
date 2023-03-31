@@ -1,0 +1,41 @@
+/*
+ * Replace this with your own classes
+ *
+ * e.g.
+ * .container {
+ * }
+*/
+
+.container {
+  position: relative;
+  width: 234px;
+  height: 234px;
+}
+
+.image {
+  position: absolute;
+  left: 0%;
+  right: 0%;
+  top: 0%;
+  bottom: 0%;
+}
+
+.text {
+  position: absolute;
+  padding: 5px;
+  /* width: 120px;
+  height: 32px; */
+  left: 0px;
+  bottom: 0px;
+  background: #FFCC21;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 18px;
+  /* identical to box height, or 120% */
+  letter-spacing: 0.15px;
+
+  color: #FFFFFF;
+}

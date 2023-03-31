@@ -1,0 +1,67 @@
+.container {
+  position: relative;
+  width: 231px;
+  height: 231px;
+}
+
+.box {
+  box-sizing: border-box;
+
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+
+  background: #FFFFFF;
+  border: 2px solid #707070;
+}
+
+.current-time-box {
+  position: absolute;
+  width: 147px;
+  height: 48px;
+  left: 16px;
+  top: 16px;
+}
+
+.current-time {
+  position: absolute;
+  right: 29.44%;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  /* or 122% */
+  letter-spacing: 0.09px;
+
+  color: #414141;
+}
+
+.memory-box {
+  position: absolute;
+  left: 6.93%;
+  right: 6.49%;
+  top: 31.17%;
+  bottom: 11.69%;
+}
+
+.memory {
+  position: absolute;
+  height: 132px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 17px;
+  /* or 142% */
+  letter-spacing: 0.06px;
+
+  color: #414141;
+}

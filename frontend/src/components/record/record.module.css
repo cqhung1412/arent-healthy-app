@@ -1,0 +1,67 @@
+/* component_record */
+.container {
+  position: relative;
+  width: 288px;
+  height: 288px;
+}
+
+.outer-line {
+  box-sizing: border-box;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  background: #2e2e2e;
+  border: 24px solid #ffcc21;
+}
+
+.image {
+  position: absolute;
+
+  background: #000000;
+  mix-blend-mode: luminosity;
+  opacity: 0.4;
+}
+
+.main-text {
+  position: absolute;
+  left: 8.33%;
+  right: 8.33%;
+  top: 38.89%;
+  bottom: 50.69%;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 30px;
+  /* identical to box height, or 120% */
+  text-align: center;
+  letter-spacing: 0.125px;
+
+  color: #FFCC21;
+}
+
+.button {
+  position: absolute;
+  height: 24px;
+  width: max-content;
+  left: 51px;
+  right: 51px;
+  top: calc(50% - 24px/2 + 20px);
+
+  border: none;
+  cursor: pointer;
+  background: #FF963C;
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 20px;
+  /* identical to box height, or 143% */
+  text-align: center;
+
+  color: #FFFFFF;
+}
