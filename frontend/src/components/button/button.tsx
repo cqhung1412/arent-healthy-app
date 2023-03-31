@@ -5,9 +5,11 @@ export interface ButtonProps {}
 
 export function Button(props: ButtonProps) {
   return (
-    <div className={styles['container']}>
-      <h1>Welcome to Button!</h1>
-    </div>
+    <button className={styles['container']}>
+      <div className={styles['container-box']}>
+        <div className={styles['text']}>記録をもっと見る</div>
+      </div>
+    </button>
   );
 }
 

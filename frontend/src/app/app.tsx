@@ -5,12 +5,14 @@
 // import DiaryList from '../components/diary-list/diary-list';
 // import Column from 'src/components/column/column';
 // import Hex from 'src/components/hex/hex';
-import Header from 'src/components/header/header';
-
+// import Header from 'src/components/header/header';
+import Button from "src/components/button/button";
+import Footer from "src/components/footer/footer";
 export function App() {
   return (
     <>
-      <Header />
+      <Footer />
+      <Button />
       {/* Hex
       <Hex />
       Column

@@ -1,7 +1,39 @@
-/*
- * Replace this with your own classes
- *
- * e.g.
- * .container {
- * }
-*/
+/* component_btn */
+
+.container {
+  position: absolute;
+  width: 296px;
+  height: 56px;
+
+  /* border: 1px solid transparent; */
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.container-box {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+
+  background: linear-gradient(32.95deg, #FFCC21 8.75%, #FF963C 86.64%);
+}
+
+.text {
+  position: absolute;
+  height: 26px;
+  left: 4px;
+  right: 4px;
+  top: calc(50% - 26px/2 - 1px);
+
+  font-family: 'Hiragino Kaku Gothic Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 26px;
+  /* identical to box height, or 144% */
+  text-align: center;
+
+  color: #FFFFFF;
+}
