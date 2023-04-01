@@ -24,6 +24,13 @@ func (server *Server) setupRouter() {
 	apiGroup.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"data": "hello world"})
 	})
+	apiGroup.POST("/user/login", server.loginUser)
+
+	authRoutes := apiGroup.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.GET("/meals", server.getMeals)
+	authRoutes.GET("/exercises", server.getExercises)
+	authRoutes.GET("/diary-entries", server.getDiaryEntries)
+	authRoutes.GET("/body-composition", server.getBodyComposition)
 
 	server.router = router
 }
