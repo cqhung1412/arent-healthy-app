@@ -1,4 +1,56 @@
 .container {
+  margin-top: 0;
+  min-height: calc(100vh - 252px);
+}
+
+.row-1 {
+  height: 316px;
   width: 100%;
-  height: auto;
+  display: flex;
+}
+
+.row-1 .chart-container {
+  background: #2E2E2E;
+  width: 58%;
+}
+
+.row-2 {
+  margin: 20px 20%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.row-2 .hex-button {
+  width: 116px;
+  height: 134px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(155.89deg, yellow 8.26%, orange 91.18%);
+  border: none;
+  cursor: pointer;
+}
+
+.row-2 .hex-button:hover {
+  background: linear-gradient(155.89deg, yellow 8.26%, #EA6C00 91.18%);
+}
+
+.row-2 .hex-button .text {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: white;
+}
+
+.row-3 {
+  margin: 0 12%;
+  height: 100%;
+}
+
+.row-3 .card-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  /* justify-content: space-between; */
+  margin-bottom: 20px;
 }

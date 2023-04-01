@@ -25,7 +25,13 @@ const Circle = ({ colour, pct }: { colour: string; pct?: number }) => {
 	);
 };
 
-const Text = ({ percentage }: { percentage: number }) => {
+const Text = ({
+	extra,
+	percentage,
+}: {
+	extra?: string;
+	percentage: number;
+}) => {
 	return (
 		<text
 			x="50%"
@@ -34,15 +40,18 @@ const Text = ({ percentage }: { percentage: number }) => {
 			textAnchor="middle"
 			fontSize={'1.5em'}
 		>
+			{extra ? `${extra} ` : ''}
 			{percentage.toFixed(0)}%
 		</text>
 	);
 };
 
 const Pie = ({
+	extra,
 	percentage,
 	colour,
 }: {
+	extra?: string;
 	percentage: number;
 	colour: string;
 }) => {
@@ -53,7 +62,7 @@ const Pie = ({
 				<Circle colour="lightgrey" />
 				<Circle colour={colour} pct={pct} />
 			</g>
-			<Text percentage={pct} />
+			<Text percentage={pct} extra={extra} />
 		</svg>
 	);
 };

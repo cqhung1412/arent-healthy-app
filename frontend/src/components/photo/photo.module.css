@@ -10,10 +10,15 @@
   position: relative;
   width: 234px;
   height: 234px;
+  margin-bottom: 1rem;
+  flex-basis: 25%;
+
 }
 
 .image {
   position: absolute;
+  width: 234px;
+  height: 234px;
   left: 0%;
   right: 0%;
   top: 0%;
