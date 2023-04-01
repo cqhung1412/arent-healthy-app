@@ -4,7 +4,7 @@ Fullstack Application for Arent interview
 
 ## Introduction
 
-This repo is for the Arent coding test. The purpose of this test is to develop an end-to-end web application that includes the user interface (UI), APIs and database and meets the requirements specified in the [requirements document](/docs/FullstackTest.pdf).
+This repo is for the Arent coding test. The purpose of this test is to develop an end-to-end web application that includes the user interface (UI), APIs and database ~and meets the requirements specified in the [requirements document](/docs/FullstackTest.pdf)~.
 
 ## Architecture
 
