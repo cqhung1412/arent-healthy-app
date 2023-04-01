@@ -88,7 +88,7 @@ Resources:
         - Name: DB_SOURCE
           Value: postgresql://root:secret@postgres:5432/simple_health?sslmode=disable
         Essential: true
-        Image: docker.io/qhung1412/arent-backend:latest@sha256:3b67a6cddc604b5d9cafa1c36880968fc2b7f8a81b8c5bbb809439c62caccec4
+        Image: docker.io/qhung1412/arent-backend:latest@sha256:dfbabc959022af847753f9456c87d3c880f7e6d81fb40183d6c7d92cd621dd65
         LinuxParameters: {}
         LogConfiguration:
           LogDriver: awslogs
@@ -179,70 +179,51 @@ Resources:
         Value: db-data
       - Key: Name
         Value: arent-healthy-app_db-data
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
     Type: AWS::EFS::AccessPoint
-  DbdataFilesystem:
-    DeletionPolicy: Retain
-    Properties:
-      Encrypted: true
-      FileSystemTags:
-      - Key: com.docker.compose.project
-        Value: arent-healthy-app
-      - Key: com.docker.compose.volume
-        Value: db-data
-      - Key: Name
-        Value: arent-healthy-app_db-data
-    Type: AWS::EFS::FileSystem
   DbdataNFSMountTargetOnSubnet01ece9168c7557fd8:
     Properties:
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
       SecurityGroups:
-      - Ref: BacknetNetwork
       - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
       SubnetId: subnet-01ece9168c7557fd8
     Type: AWS::EFS::MountTarget
   DbdataNFSMountTargetOnSubnet043a7434f2460a1bc:
     Properties:
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
       SecurityGroups:
-      - Ref: BacknetNetwork
       - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
       SubnetId: subnet-043a7434f2460a1bc
     Type: AWS::EFS::MountTarget
   DbdataNFSMountTargetOnSubnet060a4086e0b0cf587:
     Properties:
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
       SecurityGroups:
-      - Ref: BacknetNetwork
       - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
       SubnetId: subnet-060a4086e0b0cf587
     Type: AWS::EFS::MountTarget
   DbdataNFSMountTargetOnSubnet0aa1df478a237436a:
     Properties:
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
       SecurityGroups:
-      - Ref: FrontnetNetwork
       - Ref: BacknetNetwork
+      - Ref: FrontnetNetwork
       SubnetId: subnet-0aa1df478a237436a
     Type: AWS::EFS::MountTarget
   DbdataNFSMountTargetOnSubnet0d327394aa5d7a875:
     Properties:
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
       SecurityGroups:
-      - Ref: BacknetNetwork
       - Ref: FrontnetNetwork
+      - Ref: BacknetNetwork
       SubnetId: subnet-0d327394aa5d7a875
     Type: AWS::EFS::MountTarget
   DbdataNFSMountTargetOnSubnet0e022a90896690696:
     Properties:
-      FileSystemId:
-        Ref: DbdataFilesystem
+      FileSystemId: fs-09d9323193bf54c6c
       SecurityGroups:
       - Ref: FrontnetNetwork
       - Ref: BacknetNetwork
@@ -327,7 +308,7 @@ Resources:
         - Condition: SUCCESS
           ContainerName: Frontend_ResolvConf_InitContainer
         Essential: true
-        Image: docker.io/qhung1412/arent-frontend:latest@sha256:85b67b5032f59d9eda76f6eb3c7aaed4bf79fa21c02a02638b42474ee11da487
+        Image: docker.io/qhung1412/arent-frontend:latest@sha256:7ab8a67bdcb99b0631162980ed1d91921a535a1b4833d4f4f568365ed38c2fb8
         LinuxParameters: {}
         LogConfiguration:
           LogDriver: awslogs
@@ -444,8 +425,8 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-          - Ref: FrontnetNetwork
           - Ref: BacknetNetwork
+          - Ref: FrontnetNetwork
           Subnets:
           - subnet-01ece9168c7557fd8
           - subnet-0e022a90896690696
@@ -691,8 +672,7 @@ Resources:
             AccessPointId:
               Ref: DbdataAccessPoint
             IAM: ENABLED
-          FilesystemId:
-            Ref: DbdataFilesystem
+          FilesystemId: fs-09d9323193bf54c6c
           TransitEncryption: ENABLED
         Name: db-data
     Type: AWS::ECS::TaskDefinition
@@ -741,9 +721,7 @@ Resources:
             Effect: Allow
             Principal: {}
             Resource:
-            - Fn::GetAtt:
-              - DbdataFilesystem
-              - Arn
+            - arn:aws:elasticfilesystem:us-east-1:648824198004:file-system/fs-09d9323193bf54c6c
           Version: 2012-10-17
         PolicyName: PostgresDbdataVolumeMountPolicy
       Tags:
