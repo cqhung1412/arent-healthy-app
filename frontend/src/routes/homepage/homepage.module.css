@@ -54,3 +54,24 @@
   /* justify-content: space-between; */
   margin-bottom: 20px;
 }
+
+.row-4 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.bottom-button {
+  width: 296px;
+  height: 56px;
+  background: linear-gradient(32.95deg, yellow 8.75%, orange 86.64%);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: white;
+  font-weight: 300;
+  border-radius: 5px;
+}
+
+.bottom-button:hover {
+  filter: grayscale(20%);
+}

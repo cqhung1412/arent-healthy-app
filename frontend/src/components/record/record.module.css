@@ -18,10 +18,21 @@
 
 .image {
   position: absolute;
+  object-fit: cover;
+  
+  width: 240px;
+  height: 240px;
 
   background: #000000;
   mix-blend-mode: luminosity;
   opacity: 0.4;
+}
+
+.inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover !important;
 }
 
 .main-text {
@@ -47,8 +58,6 @@
   position: absolute;
   height: 24px;
   width: max-content;
-  left: 51px;
-  right: 51px;
   top: calc(50% - 24px/2 + 20px);
 
   border: none;

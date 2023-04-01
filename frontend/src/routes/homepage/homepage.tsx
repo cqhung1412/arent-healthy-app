@@ -76,13 +76,13 @@ const myRecordLineChartData = {
 	],
 	datasets: [
 		{
-			label: 'Dataset 1',
+			label: 'Body Fat',
 			data: [16, 15, 14, 12, 14, 11, 10, 8, 9, 7, 6, 5],
 			borderColor: '#FFCC21',
 			pointBackgroundColor: '#FFCC21',
 		},
 		{
-			label: 'Dataset 2',
+			label: 'Weight',
 			data: [16, 14, 15, 12, 13, 14, 12, 10, 9, 9, 8, 6],
 			borderColor: '#8FE9D0',
 			pointBackgroundColor: '#8FE9D0',
@@ -175,8 +175,8 @@ export function Homepage(props: HomepageProps) {
 					))}
 				</div>
 			</div>
-			<div className="bottom-button-container">
-				<button className="bottom-button">コラムをもっと見る</button>
+			<div className={styles['row-4']}>
+				<button className={styles['bottom-button']}>コラムをもっと見る</button>
 			</div>
 		</MainLayout>
 	);

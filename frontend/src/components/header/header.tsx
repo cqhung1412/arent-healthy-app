@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './header.module.css';
 import Logo from '../../assets/svg/logo.svg';
 import IconMemo from '../../assets/svg/icon_memo.svg';
@@ -11,22 +12,22 @@ export interface HeaderProps {}
 export function Header(props: HeaderProps) {
 	return (
 		<div className={styles['header']}>
-			<a className={styles['logo']} href="/">
+			<Link className={styles['logo']} to="/">
 				<img src={Logo} alt="logo" />
-			</a>
+			</Link>
 			<div className={styles['header-right']}>
-				<a href="#home">
+				<Link to="/my-record">
 					<img src={IconMemo} alt="memo" />
 					自分の記録
-				</a>
-				<a href="#home">
+				</Link>
+				<Link to="/recommend">
 					<img src={IconChallenge} alt="memo" />
 					チャレンジ
-				</a>
-				<a href="#home">
+				</Link>
+				<Link to="/">
 					<img src={IconInfo} alt="memo" />
 					お知らせ
-				</a>
+				</Link>
 				<a href="#">
 					<img src={IconMenu} alt="menu" />
 				</a>
