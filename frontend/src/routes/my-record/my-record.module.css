@@ -1,0 +1,167 @@
+.card-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 50px 0;
+}
+
+.chart-container {
+  background: #2E2E2E;
+  padding: 10px;
+  margin-bottom: 50px;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.chart-container .chart-header {
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: 400;
+  margin: 5px 0px 0px 10px;
+}
+
+.chart-header .chart-name {
+  font-family: 'Inter';
+  font-size: 15px;
+  margin-right: 30px;
+}
+
+.chart-header .date {
+  font-family: 'Inter';
+  font-size: 22px;
+}
+
+.chart-container .button-container {
+  display: flex;
+  margin: 10px;
+  padding-bottom: 1px;
+}
+
+.button-container .button {
+  width: 56px;
+  height: 24px;
+  margin-right: 20px;
+  background: white;
+  color: yellow;
+  font-size: 12px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.button-container .button:hover,
+.active {
+  color: white;
+  background: yellow;
+}
+
+.chart-container .data-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 5px 10px 10px 10px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  width: 46%;
+  border-bottom: 1px solid gray;
+  margin-top: 5px;
+  margin-right: 30px;
+}
+
+.name {
+  display: contents;
+  font-size: 15px;
+  color: white;
+}
+
+.kcal {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 15px;
+  color: yellow;
+  margin-left: 26px;
+}
+
+.duration {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 18px;
+  color: yellow;
+  margin-right: 10px;
+}
+
+.data-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.data-container::-webkit-scrollbar-track {
+  background: gray;
+  border-radius: 5px;
+}
+
+.data-container::-webkit-scrollbar-thumb {
+  background: yellow;
+  border-radius: 5px;
+}
+
+.data-container::-webkit-scrollbar-thumb:hover {
+  background: orange;
+}
+
+.my-diary-container {
+  margin-bottom: 20px;
+
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.my-diary-container .name {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 22px;
+  margin-bottom: 5px
+}
+
+.my-diary-container .data-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.bottom-button-container {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.bottom-button {
+  width: 296px;
+  height: 56px;
+  background: linear-gradient(32.95deg, yellow 8.75%, orange 86.64%);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: white;
+  font-weight: 300;
+  border-radius: 5px;
+}
+
+.bottom-button:hover {
+  filter: grayscale(20%);
+}
+
+@media screen and (max-width: 1280px) {
+  .record-card {
+    width: 288px;
+  }
+
+  .my-diary-container .data-container .data-item {
+    height: 231px;
+  }
+}

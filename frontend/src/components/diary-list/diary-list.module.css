@@ -2,6 +2,8 @@
   position: relative;
   width: 231px;
   height: 231px;
+  flex-basis: 22%;
+  margin: 1rem;
 }
 
 .box {

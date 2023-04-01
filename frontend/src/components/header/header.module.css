@@ -1,50 +1,19 @@
-.container {
-  position: fixed;
-  width: 100%;
-  height: 64px;
-  left: 0;
-  top: 0;
+/* Style the header with a grey background and some padding */
+.header {
+  overflow: hidden;
+  background-color: #414141;
+  padding: 20px 10px;
 }
 
-.container-box {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-
-  background: #414141;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.160784);
-}
-
-.logo {
-  position: absolute;
-  width: 144px;
-  left: 160px;
-  top: 0px;
-  bottom: 0px;
-
-  mix-blend-mode: normal;
-}
-
-.menu {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  right: 160px;
-  top: calc(50% - 32px/2);
-
-  mix-blend-mode: normal;
-}
-
-.navi-1 {
-  position: absolute;
-  width: 160px;
-  left: calc(50% - 160px/2 + 32px);
-  top: 8px;
-  bottom: 8px;
-
-  mix-blend-mode: normal;
+/* Style the header links */
+.header a {
+  float: left;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  text-decoration: none;
+  line-height: 25px;
+  border-radius: 4px;
 
   font-family: 'Hiragino Kaku Gothic Pro';
   font-style: normal;
@@ -56,35 +25,43 @@
   color: #FFFFFF;
 }
 
-.navi-2 {
-  position: absolute;
-  width: 160px;
-  left: calc(50% - 160px/2 + 192px);
-  top: 8px;
-  bottom: 8px;
-
-  font-family: 'Hiragino Kaku Gothic Pro';
-  font-style: normal;
-  font-weight: 300;
-  font-size: 16px;
-  line-height: 23px;
-  /* identical to box height, or 144% */
-
-  color: #FFFFFF;
+/* Style the logo link (notice that we set the same value of line-height and font-size to prevent the header to increase when the font gets bigger */
+.header a.logo {
+  font-size: 25px;
+  font-weight: bold;
 }
 
-.navi-3 {
-  position: absolute;
-  width: 160px;
-  left: calc(50% - 160px/2 + 352px);
-  top: 8px;
-  bottom: 8px;
-  font-family: 'Hiragino Kaku Gothic Pro';
-  font-style: normal;
-  font-weight: 300;
-  font-size: 16px;
-  line-height: 23px;
-  /* identical to box height, or 144% */
+/* Change the background color on mouse-over */
+.header a:hover {
+  background-color: #ddd;
+  color: black;
+}
 
-  color: #FFFFFF;
+/* Style the active/current link*/
+.header a.active {
+  background-color: dodgerblue;
+  color: white;
+}
+
+/* Float the link section to the right */
+.header-right {
+  float: right;
+  margin-right: 15%;
+}
+
+.header-right a {
+  display: flex;
+  align-items: center;
+}
+
+/* Add media queries for responsiveness - when the screen is 500px wide or less, stack the links on top of each other */
+@media screen and (max-width: 500px) {
+  .header a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  .header-right {
+    float: none;
+  }
 }
