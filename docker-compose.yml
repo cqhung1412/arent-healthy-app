@@ -18,7 +18,7 @@ services:
     networks:
       - backnet
     environment:
-      - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_health?sslmode=disable
     depends_on:
       - postgres
     entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]

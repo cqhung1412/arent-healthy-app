@@ -86,7 +86,7 @@ Resources:
         - /app/start.sh
         Environment:
         - Name: DB_SOURCE
-          Value: postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
+          Value: postgresql://root:secret@postgres:5432/simple_health?sslmode=disable
         Essential: true
         Image: docker.io/qhung1412/arent-backend:latest@sha256:3b67a6cddc604b5d9cafa1c36880968fc2b7f8a81b8c5bbb809439c62caccec4
         LinuxParameters: {}

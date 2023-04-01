@@ -17,6 +17,7 @@ import styles from './homepage.module.css';
 
 import IconKnife from '../../assets/svg/icon_knife.svg';
 import IconCup from '../../assets/svg/icon_cup.svg';
+import { useEffect, useState } from 'react';
 
 const FOOD_MENU = [
 	{ icon: IconKnife, text: 'Morning' },
@@ -24,38 +25,10 @@ const FOOD_MENU = [
 	{ icon: IconKnife, text: 'Dinner' },
 	{ icon: IconCup, text: 'Snack' },
 ];
-export const mealData = [
+let mealData = [
 	{
 		image: 'images/m01.png',
 		description: '05.21.Morning',
-	},
-	{
-		image: 'images/l03.png',
-		description: '05.21.Lunch',
-	},
-	{
-		image: 'images/d01.png',
-		description: '05.21.Dinner',
-	},
-	{
-		image: 'images/l01.png',
-		description: '05.21.Snack',
-	},
-	{
-		image: 'images/m01.png',
-		description: '05.20.Morning',
-	},
-	{
-		image: 'images/l02.png',
-		description: '05.20.Lunch',
-	},
-	{
-		image: 'images/d02.png',
-		description: '05.20.Dinner',
-	},
-	{
-		image: 'images/s01.png',
-		description: '05.21.Snack',
 	},
 ];
 
@@ -111,7 +84,7 @@ export const lineChartOptions = {
 				color: 'white',
 				font: {
 					size: 10,
-					weight: 300,
+					weight: '300',
 				},
 			},
 			grid: {
@@ -133,7 +106,93 @@ export const lineChartOptions = {
 /* eslint-disable-next-line */
 export interface HomepageProps {}
 
+export type Composition = {
+	id: number;
+	monthstamp: string;
+	weight: number;
+	body_fat: number;
+};
+
+type Meal = {
+	id: number;
+	image_path: string;
+	type: string;
+	datestamp: string;
+};
+
 export function Homepage(props: HomepageProps) {
+	const [compositions, setCompositions] = useState<Composition[]>([]);
+	const [meals, setMeals] = useState<Meal[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+
+	useEffect(() => {
+		if (compositions.length > 0) {
+			myRecordLineChartData.datasets[0].data = compositions.map(
+				(composition) => composition.body_fat
+			);
+			myRecordLineChartData.datasets[1].data = compositions.map(
+				(composition) => composition.weight
+			);
+			myRecordLineChartData.labels = compositions.map((composition) => {
+				const date = new Date(composition.monthstamp);
+				return `${date.getMonth() + 1}月`;
+			});
+		}
+	}, [compositions]);
+
+	useEffect(() => {
+		if (meals.length > 0) {
+			mealData = meals.map((meal) => {
+				const date = new Date(meal.datestamp);
+				return {
+					image: meal.image_path,
+					description: `${date.getMonth() + 1}.${date.getDate()}.${meal.type}`,
+				};
+			});
+		}
+	}, [meals]);
+
+	useEffect(() => {
+		fetch('/api/user/login', {
+			method: 'POST',
+			body: JSON.stringify({
+				email: 'cqhung1412@gmail.com',
+				password: 'password',
+			}),
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				localStorage.setItem('access_token', res.access_token);
+				return res.access_token;
+			})
+			.then((token) => getData(token))
+			.catch((err) => console.log(err));
+	}, []);
+
+	const getData = (token: string) => {
+		setIsLoading(true);
+		const compositionPromise = fetch('/api/body-composition', {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		const mealPromise = fetch('/api/meals', {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		Promise.all([compositionPromise, mealPromise])
+			.then((res) => Promise.all(res.map((r) => r.json())))
+			.then((res) => {
+				setCompositions(res[0]);
+				setMeals(res[1]);
+			})
+			.catch((err) => console.log(err))
+			.finally(() => setIsLoading(false));
+	};
+
 	ChartJS.register(
 		CategoryScale,
 		LinearScale,

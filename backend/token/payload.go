@@ -26,7 +26,7 @@ func NewPayload(userId int64, email string, duration time.Duration) (*Payload, e
 		UserID:    userId,
 		Email:     email,
 		IssuedAt:  time.Now(),
-		ExpiredAt: time.Now().Add(duration),
+		ExpiredAt: time.Now().Add(1 * time.Hour),
 	}
 	return payload, nil
 }

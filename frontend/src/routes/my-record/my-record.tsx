@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -13,6 +14,7 @@ import MainLayout from '../../components/main-layout/main-layout';
 import DiaryList from '../../components/diary-list/diary-list';
 import styles from './my-record.module.css';
 import Record from '../../components/record/record';
+import type { Composition } from '../homepage/homepage';
 
 export const RECORD_CARD = [
 	{
@@ -84,7 +86,7 @@ export const lineChartOptions = {
 				color: 'white',
 				font: {
 					size: 10,
-					weight: 300,
+					weight: '300',
 				},
 			},
 			grid: {
@@ -103,20 +105,6 @@ export const lineChartOptions = {
 	maintainAspectRatio: false,
 };
 
-const exerciseItem = {
-	name: '家事全般（立位・軽い）',
-	kcal: 26,
-	duration: '10 min',
-};
-
-const diaryItem = {
-	date: '2021.05.21',
-	hour: '23:25',
-	name: '私の日記の記録が一部表示されます。',
-	description:
-		'テキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト…',
-};
-
 const buttons = [
 	{ text: '日', active: false },
 	{ text: '週', active: false },
@@ -124,10 +112,88 @@ const buttons = [
 	{ text: '年', active: true },
 ];
 
+type Exercise = {
+	id: number;
+	name: string;
+	kcal: number;
+	minutes: number;
+};
+
+type DiaryEntry = {
+	id: number;
+	entry: string;
+	created_at: string;
+};
+
 /* eslint-disable-next-line */
 export interface MyRecordProps {}
 
 export function MyRecord(props: MyRecordProps) {
+	const [compositions, setCompositions] = useState<Composition[]>([]);
+	const [exercises, setExercises] = useState<Exercise[]>([]);
+	const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+
+	useEffect(() => {
+		if (compositions.length > 0) {
+			myRecordLineChartData.datasets[0].data = compositions.map(
+				(composition) => composition.body_fat
+			);
+			myRecordLineChartData.datasets[1].data = compositions.map(
+				(composition) => composition.weight
+			);
+			myRecordLineChartData.labels = compositions.map((composition) => {
+				const date = new Date(composition.monthstamp);
+				return `${date.getMonth() + 1}月`;
+			});
+		}
+	}, [compositions]);
+
+	useEffect(() => {
+		fetch('/api/user/login', {
+			method: 'POST',
+			body: JSON.stringify({
+				email: 'cqhung1412@gmail.com',
+				password: 'password',
+			}),
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				localStorage.setItem('access_token', res.access_token);
+				return res.access_token;
+			})
+			.then((token) => getData(token))
+			.catch((err) => console.log(err));
+	}, []);
+
+	const getData = (token: string) => {
+		const compositionPromise = fetch('/api/body-composition', {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		const exercisePromise = fetch('/api/exercises', {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		const diaryPromise = fetch('/api/diary-entries', {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		Promise.all([compositionPromise, exercisePromise, diaryPromise])
+			.then((res) => Promise.all(res.map((r) => r.json())))
+			.then((res) => {
+				setCompositions(res[0]);
+				setExercises(res[1] || []);
+				setDiaryEntries(res[2] || []);
+			})
+			.catch((err) => console.log(err));
+	};
+
 	ChartJS.register(
 		CategoryScale,
 		LinearScale,
@@ -185,7 +251,7 @@ export function MyRecord(props: MyRecordProps) {
 					<div className={styles['date']}>2021.05.21</div>
 				</div>
 				<div className={styles['data-container']}>
-					{Array.from({ length: 20 }, () => exerciseItem).map((item, index) => (
+					{exercises.map((item, index) => (
 						<div className={styles['data-item']} key={`data-${index}`}>
 							<li>
 								<div className={styles['name']}>
@@ -194,7 +260,7 @@ export function MyRecord(props: MyRecordProps) {
 									<span className={styles['kcal']}>{item.kcal}kcal</span>
 								</div>
 							</li>
-							<div className={styles['duration']}>{item.duration}</div>
+							<div className={styles['duration']}>{item.minutes} min</div>
 						</div>
 					))}
 				</div>
@@ -202,7 +268,7 @@ export function MyRecord(props: MyRecordProps) {
 			<div className={styles['my-diary-container']}>
 				<div className={styles['name']}>MY DIARY</div>
 				<div className={styles['data-container']}>
-					{Array.from({ length: 8 }, () => diaryItem).map((item, index) => (
+					{diaryEntries.map((item, index) => (
 						<DiaryList key={index} />
 					))}
 				</div>
