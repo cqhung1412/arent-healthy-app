@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=simple_health
+    networks:
+      - backnet
+    volumes:
+      - db-data:/var/lib/postgresql
+  backend:
+    image: qhung1412/arent-backend
+    build: backend
+    ports:
+      - "8080:80"
+    networks:
+      - backnet
+    environment:
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_health?sslmode=disable
+    depends_on:
+      - postgres
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
+    command: ["/app/main"]
+volumes:
+  db-data:
+networks:
+  backnet:

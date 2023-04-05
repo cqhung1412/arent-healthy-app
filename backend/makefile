@@ -52,4 +52,7 @@ dockerrun:
 networkdocker:
 	docker network create health-network
 
-.PHONY: postgres createdb dropdb stopdb rmdb psql migrateup migratedown migrateup1 migratedown1 sqlc build test server mock dockerbuild dockerrun networkdocker
+fedev:
+	docker compose -f docker-compose.dev.yml up -d --build
+
+.PHONY: *
