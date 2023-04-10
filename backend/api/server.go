@@ -6,6 +6,7 @@ import (
 	db "github.com/cqhung1412/arent-healthy-app/backend/db/sqlc"
 	"github.com/cqhung1412/arent-healthy-app/backend/token"
 	"github.com/cqhung1412/arent-healthy-app/backend/util"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +19,7 @@ type Server struct {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	apiGroup := router.Group("/api")
 
