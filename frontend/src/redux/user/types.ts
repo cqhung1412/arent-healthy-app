@@ -1,0 +1,63 @@
+import {
+	LOGIN_REQUEST,
+	LOGIN_SUCCESS,
+	LOGIN_FAILURE,
+	FETCH_USER_REQUEST,
+	FETCH_USER_SUCCESS,
+	FETCH_USER_FAILURE,
+} from './actionTypes';
+
+export interface IUser {
+	id: number;
+	email: string;
+}
+
+export interface UserState {
+  pending: boolean;
+  user: IUser | null;
+  error: string | null;
+}
+
+export interface FetchUserSuccessPayload {
+	user: IUser;
+}
+
+export interface FetchUserFailurePayload {
+	error: string;
+}
+
+export interface LoginRequest {
+	type: typeof LOGIN_REQUEST;
+}
+
+export interface LoginSuccess {
+  type: typeof LOGIN_SUCCESS;
+  payload: FetchUserSuccessPayload;
+}
+
+export interface LoginFailure {
+  type: typeof LOGIN_FAILURE;
+  payload: FetchUserFailurePayload;
+}
+
+export interface FetchUserRequest {
+	type: typeof FETCH_USER_REQUEST;
+}
+
+export type FetchUserSuccess = {
+	type: typeof FETCH_USER_SUCCESS;
+	payload: FetchUserSuccessPayload;
+};
+
+export type FetchUserFailure = {
+	type: typeof FETCH_USER_FAILURE;
+	payload: FetchUserFailurePayload;
+};
+
+export type UserActions =
+  | LoginRequest
+  | LoginSuccess
+  | LoginFailure
+	| FetchUserRequest
+	| FetchUserSuccess
+	| FetchUserFailure;

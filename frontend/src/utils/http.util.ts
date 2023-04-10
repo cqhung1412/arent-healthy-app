@@ -68,7 +68,7 @@ function getJson(
 	isAuth: boolean = false,
 	data: any = null,
 	customHeaders: any = null
-) {
+): any {
 	return makeJsonRequest(
 		'GET',
 		path,
@@ -77,7 +77,12 @@ function getJson(
 	);
 }
 
-function postJson(path: any, data: any, isAuth: any, customHeaders: any) {
+function postJson(
+	path: any,
+	isAuth: boolean = false,
+	data: any = null,
+	customHeaders: any = null
+) {
 	return makeJsonRequest(
 		'POST',
 		path,

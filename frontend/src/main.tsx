@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
+
+import store from './redux/store';
 import ErrorPage from './error-page';
 import Homepage from './routes/homepage/homepage';
 import MyRecord from './routes/my-record/my-record';
@@ -11,7 +14,7 @@ const router = createBrowserRouter([
 	{
 		path: '/',
 		element: <Homepage />,
-    errorElement: <ErrorPage />,
+		errorElement: <ErrorPage />,
 	},
 	{
 		path: '/my-record',
@@ -22,11 +25,13 @@ const router = createBrowserRouter([
 		path: '/recommend',
 		element: <Recommend />,
 		errorElement: <ErrorPage />,
-	}
+	},
 ]);
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
-		<RouterProvider router={router} />
+		<Provider store={store}>
+			<RouterProvider router={router} />
+		</Provider>
 	</React.StrictMode>
 );

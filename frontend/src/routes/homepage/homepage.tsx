@@ -1,3 +1,13 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import {
+  getPendingSelector,
+  getUserSelector,
+  getErrorSelector,
+} from "../../redux/user/selectors";
+import { fetchUser } from "../../redux/user/actions";
+
 import { Line } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -17,7 +27,6 @@ import styles from './homepage.module.css';
 
 import IconKnife from '../../assets/svg/icon_knife.svg';
 import IconCup from '../../assets/svg/icon_cup.svg';
-import { useEffect, useState } from 'react';
 
 const FOOD_MENU = [
 	{ icon: IconKnife, text: 'Morning' },
@@ -103,9 +112,6 @@ export const lineChartOptions = {
 	maintainAspectRatio: false,
 };
 
-/* eslint-disable-next-line */
-export interface HomepageProps {}
-
 export type Composition = {
 	id: number;
 	monthstamp: string;
@@ -120,7 +126,15 @@ type Meal = {
 	datestamp: string;
 };
 
+/* eslint-disable-next-line */
+export interface HomepageProps {}
+
 export function Homepage(props: HomepageProps) {
+	const dispatch = useDispatch();
+	const pending = useSelector(getPendingSelector);
+	const user = useSelector(getUserSelector);
+	const error = useSelector(getErrorSelector);
+
 	const [compositions, setCompositions] = useState<Composition[]>([]);
 	const [meals, setMeals] = useState<Meal[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -153,6 +167,7 @@ export function Homepage(props: HomepageProps) {
 	}, [meals]);
 
 	useEffect(() => {
+		dispatch(fetchUser());
 		fetch('/api/user/login', {
 			method: 'POST',
 			body: JSON.stringify({
