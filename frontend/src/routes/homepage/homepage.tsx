@@ -35,14 +35,8 @@ const FOOD_MENU = [
 	{ icon: IconKnife, text: 'Dinner' },
 	{ icon: IconCup, text: 'Snack' },
 ];
-let mealData = [
-	{
-		image: 'images/m01.png',
-		description: '05.21.Morning',
-	},
-];
 
-const myRecordLineChartData = {
+let myRecordLineChartData = {
 	labels: [
 		'6月',
 		'7月',
@@ -161,20 +155,9 @@ export function Homepage(props: HomepageProps) {
 				const date = new Date(composition.monthstamp);
 				return `${date.getMonth() + 1}月`;
 			});
+			myRecordLineChartData = { ...myRecordLineChartData };
 		}
 	}, [compositions]);
-
-	useEffect(() => {
-		if (meals.length > 0) {
-			mealData = meals.map((meal) => {
-				const date = new Date(meal.datestamp);
-				return {
-					image: meal.image_path,
-					description: `${date.getMonth() + 1}.${date.getDate()}.${meal.type}`,
-				};
-			});
-		}
-	}, [meals]);
 
 	useEffect(() => {
 		dispatch(fetchUser());
@@ -225,13 +208,18 @@ export function Homepage(props: HomepageProps) {
 			</div>
 			<div className={styles['row-3']}>
 				<div className={styles['card-container']}>
-					{mealData.map((card, index) => (
-						<Photo
-							key={index}
-							imageName={card.image}
-							imageSpec={card.description}
-						/>
-					))}
+					{meals.map((card, index) => {
+						const date = new Date(card.datestamp);
+						return (
+							<Photo
+								key={index}
+								imageName={card.image_path}
+								imageSpec={`${date.getMonth() + 1}.${date.getDate()}.${
+									card.type
+								}`}
+							/>
+						);
+					})}
 				</div>
 			</div>
 			<div className={styles['row-4']}>
