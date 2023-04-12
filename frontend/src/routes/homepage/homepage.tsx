@@ -144,6 +144,8 @@ export function Homepage(props: HomepageProps) {
 		console.log('user updated: ', user);
 		if (user?.id) {
 			getData();
+		} else {
+			dispatch(login());
 		}
 	}, [user]);
 
@@ -175,7 +177,7 @@ export function Homepage(props: HomepageProps) {
 	}, [meals]);
 
 	useEffect(() => {
-		dispatch(login());
+		dispatch(fetchUser());
 	}, []);
 
 	const getData = () => {
