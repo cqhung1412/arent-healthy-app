@@ -135,7 +135,6 @@ export function Homepage(props: HomepageProps) {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		console.log('user updated: ', user);
 		if (user?.id) {
 			getData();
 		} else {
