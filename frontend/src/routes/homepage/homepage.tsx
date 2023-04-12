@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  getPendingSelector,
-  getUserSelector,
-  getErrorSelector,
-} from "../../redux/user/selectors";
-import { fetchUser, login } from "../../redux/user/actions";
+	getPendingSelector,
+	getUserSelector,
+	getErrorSelector,
+} from '../../redux/user/selectors';
+import { fetchUser, login } from '../../redux/user/actions';
 
 import { Line } from 'react-chartjs-2';
 import {
@@ -27,6 +27,7 @@ import styles from './homepage.module.css';
 
 import IconKnife from '../../assets/svg/icon_knife.svg';
 import IconCup from '../../assets/svg/icon_cup.svg';
+import httpUtil from '../../utils/http.util';
 
 const FOOD_MENU = [
 	{ icon: IconKnife, text: 'Morning' },
@@ -140,8 +141,11 @@ export function Homepage(props: HomepageProps) {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		console.log('user updated: ', user)
-	}, [user])
+		console.log('user updated: ', user);
+		if (user?.id) {
+			getData();
+		}
+	}, [user]);
 
 	useEffect(() => {
 		if (compositions.length > 0) {
@@ -174,22 +178,11 @@ export function Homepage(props: HomepageProps) {
 		dispatch(login());
 	}, []);
 
-	const getData = (token: string) => {
+	const getData = () => {
 		setIsLoading(true);
-		const compositionPromise = fetch('/api/body-composition', {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		const mealPromise = fetch('/api/meals', {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
+		const compositionPromise = httpUtil.getJson('/body-composition', true);
+		const mealPromise = httpUtil.getJson('/meals', true);
 		Promise.all([compositionPromise, mealPromise])
-			.then((res) => Promise.all(res.map((r) => r.json())))
 			.then((res) => {
 				setCompositions(res[0]);
 				setMeals(res[1]);

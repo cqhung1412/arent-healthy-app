@@ -28,7 +28,7 @@ export default (state = initialState, action: UserActions) => {
 			return {
 				...state,
 				pending: false,
-				users: action.payload.user,
+				user: action.payload.user,
 				error: null,
 			};
 		case LOGIN_FAILURE:
@@ -36,7 +36,7 @@ export default (state = initialState, action: UserActions) => {
 			return {
 				...state,
 				pending: false,
-				users: [],
+				user: null,
 				error: action.payload.error,
 			};
 		default:
