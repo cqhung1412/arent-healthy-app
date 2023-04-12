@@ -19,7 +19,11 @@ type Server struct {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
-	router.Use(cors.Default())
+
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
+	corsConfig.AllowAllOrigins = true
+	router.Use(cors.New(corsConfig))
 
 	apiGroup := router.Group("/api")
 
@@ -29,6 +33,8 @@ func (server *Server) setupRouter() {
 	apiGroup.POST("/user/login", server.loginUser)
 
 	authRoutes := apiGroup.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.GET("/user", server.getUser)
+
 	authRoutes.GET("/meals", server.getMeals)
 	authRoutes.GET("/exercises", server.getExercises)
 	authRoutes.GET("/diary-entries", server.getDiaryEntries)

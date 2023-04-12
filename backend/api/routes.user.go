@@ -4,12 +4,28 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/cqhung1412/arent-healthy-app/backend/token"
 	"github.com/gin-gonic/gin"
 )
 
 type userResponse struct {
 	ID    int64  `json:"id"`
 	Email string `json:"email"`
+}
+
+type getUserResponse struct {
+	User userResponse `json:"user"`
+}
+
+func (server *Server) getUser(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authPayloadKey).(*token.Payload)
+	response := getUserResponse{
+		User: userResponse{
+			ID:    authPayload.UserID,
+			Email: authPayload.Email,
+		},
+	}
+	ctx.JSON(http.StatusOK, response)
 }
 
 type loginUserRequest struct {

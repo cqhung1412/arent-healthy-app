@@ -6,7 +6,7 @@ import {
   getUserSelector,
   getErrorSelector,
 } from "../../redux/user/selectors";
-import { fetchUser } from "../../redux/user/actions";
+import { fetchUser, login } from "../../redux/user/actions";
 
 import { Line } from 'react-chartjs-2';
 import {
@@ -140,6 +140,10 @@ export function Homepage(props: HomepageProps) {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
+		console.log('user updated: ', user)
+	}, [user])
+
+	useEffect(() => {
 		if (compositions.length > 0) {
 			myRecordLineChartData.datasets[0].data = compositions.map(
 				(composition) => composition.body_fat
@@ -167,21 +171,7 @@ export function Homepage(props: HomepageProps) {
 	}, [meals]);
 
 	useEffect(() => {
-		dispatch(fetchUser());
-		fetch('/api/user/login', {
-			method: 'POST',
-			body: JSON.stringify({
-				email: 'cqhung1412@gmail.com',
-				password: 'password',
-			}),
-		})
-			.then((res) => res.json())
-			.then((res) => {
-				localStorage.setItem('access_token', res.access_token);
-				return res.access_token;
-			})
-			.then((token) => getData(token))
-			.catch((err) => console.log(err));
+		dispatch(login());
 	}, []);
 
 	const getData = (token: string) => {

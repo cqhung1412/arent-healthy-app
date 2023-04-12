@@ -8,7 +8,7 @@ async function makeHttpRequest(
 	path: string,
 	data: Record<string, any> | null,
 	customHeaders: any
-) {
+): Promise<any> {
 	let deferred = Q.defer();
 	let url = config.API_URL + path;
 	if (data) {
@@ -29,7 +29,7 @@ async function makeHttpRequest(
 			url,
 			data,
 			headers: customHeaders,
-			withCredentials: true,
+			// withCredentials: true,
 			timeout: 60 * 5 * 1000, // 5 minutes
 		});
 		if (req.status === 200) {
@@ -40,6 +40,8 @@ async function makeHttpRequest(
 	} catch (error) {
 		deferred.reject(error);
 	}
+
+	return deferred.promise;
 }
 
 function makeJsonRequest(

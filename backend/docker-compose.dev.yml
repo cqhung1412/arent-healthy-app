@@ -11,8 +11,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql
   backend:
-    image: qhung1412/arent-backend
-    build: backend
+    build: .
     ports:
       - "8080:80"
     networks:

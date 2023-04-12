@@ -14,17 +14,13 @@ import _ from 'lodash';
 
 const login = () =>
 	httpUtil
-		.postJson('/api/login', false, {
+		.postJson('/user/login', false, {
 			email: 'cqhung1412@gmail.com',
 			password: 'password',
 		})
 		.then((data) => {
-			const resp = _.get(data, 'data', null) as unknown as {
-				access_token: string;
-				user: IUser;
-			};
-			localStorage.setItem('access_token', resp?.access_token);
-			return resp.user;
+			localStorage.setItem('access_token', data.access_token);
+			return data.user;
 		});
 
 /*
@@ -47,7 +43,7 @@ function* loginSaga(): Generator {
 	}
 }
 
-const getUser = () => httpUtil.getJson('/api/user', true);
+const getUser = () => httpUtil.getJson('/user', true);
 
 /*
   Worker Saga: Fired on FETCH_USER_REQUEST action
